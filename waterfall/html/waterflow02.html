@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>瀑布流</title>
+		<style>
+			
+			*{
+				margin: 0;
+				padding: 0;
+				list-style: none;/*清除样式ul*/
+			}
+			
+			/*设置背板的样子*/
+			#wrap{
+				width: 850px;
+				border: 1px solid hotpink;
+				margin: 0 auto;/*auto可以居中左右，但上下auto是无效的*/
+				overflow: hidden;/*清浮动*/
+				}
+				
+			/*设置ul样式*/
+			
+			ul{
+				float: left;
+				width: 200px;
+				margin-left: 10px;
+				/*
+				 * 测试ul样式
+				 height: 100px;
+				 background: black;
+				 * */
+			}
+			
+			
+			
+		</style>
+	</head>
+	<body>
+		
+		<div id="wrap">
+			<ul id="ul1"></ul>
+			<ul id="ul2"></ul>
+			<ul id="ul3"></ul>
+			<ul id="ul4"></ul>
+		</div>
+		
+		
+		<script src="mathfn.js"></script>
+		<script type="text/javascript">
+			/*
+			 
+			 * 清浮动：加伪类，overflow:hadden,给父元素加高度，加空div并clear:both。。。至少10
+			 * 
+			 * */
+			
+			//动态创建li标签，并向高度最低的ul中添加标签
+			
+			//工具函数：产生指定范围内的随机数
+			
+//			function randomFun (min, max) {
+//				return parseInt(Math.random()*(max - min + 1)+ min);
+//			}
+			var num = 1;//保存创建的是第几个li
+			window.onload = function () {										
+				//调用创建拼接li的函数，把瀑布流图片加载出来
+				createLi();
+				
+				//当用户滚动页面时，判断用户卷起来的高度是否等于最大卷起来的高度，若相等，则代表用户已经滚动到页面的底部，调用一次createLi，加载新标签
+				window.onscroll = scrollMaxH;
+				
+			}
+			
+			//封装创建li并拼接进文档流操作
+			function createLi () {
+				//创建li：一次创建n = 30
+				var n = 30;
+				
+				//获取ul标签-标签名直接获取ul数组-遍历比较minUl
+				var uls = document.getElementsByTagName('ul');
+				//var uls = document.querySelectorAll('ul');
+				
+				
+				for(var i = 0;i < n;i++) {
+					var li = document.createElement('li');
+					
+					//给li添加样式					
+					li.style.cssText = 'width:200px;height:'+randomFun(100, 300)+'px;background-color: lawngreen;;margin-top:10px;font-size:30px;';				
+					li.innerText = num++;
+					
+					//找出高度最低的ul，把li拼接进去
+					//1.定义一个变量，用来存放高度最低的ul标签、及其下标
+					var minHeight = uls[0];
+					var index = 0;
+					
+					//2. 通过for循环遍历数组，并判断出高度最低的标签
+					for(var j=0;j < uls.length; j++) {
+						if (minHeight.offsetHeight > uls[j].offsetHeight){
+							
+							//把当前判断出的新最小高度标签ul放进minHeight变量中，用于下一次判断
+							minHeight = uls[j];
+							//保存当前最小高度标签的下标，供以后拼接li时使用
+							index = j;
+						}
+						
+					}
+					uls[index].appendChild(li);
+					
+				}
+			}
+			
+			
+			//文档高度--卷起高度+可视窗口高度1
+			//卷起最大高度--用户卷起高度2
+			
+			//但是Google只有在body||IE,FF通过documentElement下可获取scroll的属性值----兼容处理
+			//DOM下的属性，则html下的标签都可拿到其属性，但scroll属性的值却只有body/document拿到
+			
+			function scrollMaxH () {
+				
+				//获取到允许用户卷起来的最大高度：文档高度-浏览器可视窗口高度
+				//缩小窗口则maxHeight变大，因为文档高度不变，而可视窗口高度缩小
+				var maxScrollHeight = document.documentElement.offsetHeight - document.documentElement.clientHeight;//获取的是document的高度---参照物document
+				
+				//获取当前用户已经卷起的高度
+				var scrollHeight = document.body.scrollTop || document.documentElement.scrollTop;//获取的是body的宽高--wrap的宽高---参照物body
+				
+				//判断用户卷起高度是
+				//if(scrollHeight == maxScrollHeight) {//打印不出：两个高度的参照物不同，有差值存在---不相等----只有部分浏览器存在这种问题，所以设置一个容差值20---兼容性!!!!
+				if(scrollHeight >= maxScrollHeight-20) {
+					console.log('____________TEST_____________!!!!');
+					createLi();					
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+		</script>
+		
+	</body>
+</html>
