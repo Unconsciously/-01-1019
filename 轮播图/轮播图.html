@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>轮播图-简易版</title>
+		<style type="text/css">
+			.wrap{
+				width: 200px;
+				height: 200px;
+				position: relative;
+				overflow: hidden;
+			}
+			#middle{
+				height: 200px;
+				/*width: ;*/
+				position: absolute;
+				left: 0;
+				top: 0;
+				-webkit-transition: all .5s;
+				-moz-transition: all .5s;
+				-ms-transition: all .5s;
+				-o-transition: all .5s;
+				transition: all .5s;
+			}
+			#middle>div{
+				width: 200px;
+				height: 200px;
+				float: left;
+				font-size: 50px;
+				background-color: #ccc;
+				text-align: center;
+				line-height: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<input value="last" id="last" type="button" />
+		<input value="next" id="next" type="button" />
+		<div id="inpbtn">
+			<input type="button" value="按钮1" />
+			<input type="button" value="按钮2" />
+			<input type="button" value="按钮3" />
+			<input type="button" value="按钮4" />	
+		</div>
+		<div class="wrap">
+			<div id="middle">
+				<div>div1</div>
+				<div>div2</div>
+				<div>div3</div>
+				<div>div4</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var wrap = document.querySelector(".wrap");
+		var middle = document.querySelector("#middle");
+		var divs = document.querySelectorAll("#middle>div");
+		var inputs = document.querySelectorAll("#inpbtn>input");
+		var last = document.querySelector("#last");
+		var next = document.querySelector("#next");
+		
+		var w = wrap.offsetWidth;
+		var index = 0;
+		
+		middle.style.width = w*divs.length + "px";
+		function nextFn(){
+			index++;
+			if (index>divs.length-1){
+				index = 0;
+			}
+			var l = -index * w;
+			middle.style.left = l + "px";
+		}
+		
+		function clearTimer(){
+			clearInterval(timer);
+			
+			timer = setInterval(function (){
+			
+				nextFn();
+			},2000);
+		}
+		
+		var timer = setInterval(function (){
+			
+			nextFn();
+		},2000);
+		
+		next.onclick = function (){
+			
+			nextFn();
+			clearTimer();
+		}
+		
+		last.onclick = function (){
+			
+			index--;
+			if (index<0){
+				index = divs.length-1;
+			}
+			var l = -index*w;
+			middle.style.left = l + "px";
+			
+			clearTimer();
+		}
+		
+		for (var i=0,len=inputs.length; i<len; i++){
+			
+			inputs[i].index = i;
+			inputs[i].onclick = function (){
+				//index = this.index;
+				var l = -this.index*w;
+				middle.style.left = l + "px";
+				clearTimer();
+			}
+		}
+		
+		wrap.onmouseover = function(){
+			clearInterval(timer);
+		}
+		wrap.onmouseout = function (){
+			clearTimer();
+		}
+		
+		
+		
+	</script>
+		
+</html>
